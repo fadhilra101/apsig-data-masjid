@@ -1,16 +1,14 @@
-name: CodeIgniter 3 Build
+name: CodeIgniter 3 Deployment
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  build:
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -23,35 +21,13 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.1  # Adjust the PHP version as per your requirements
+        php-version: 8.1  # Sesuaikan dengan versi PHP Anda
         extensions: mbstring, intl, mysqli
         ini-values: post_max_size=256M, upload_max_filesize=256M
         coverage: none
 
-    # Install Composer (if needed, e.g., for testing tools)
-    - name: Install Composer
-      run: composer install --no-progress --no-suggest
-
-    # Setup web server for testing (if necessary)
-    - name: Start PHP Server
-      run: php -S 127.0.0.1:8080 -t ./public/ &
-    
-    # Run CodeIgniter 3 Tests (Optional, if you have tests configured)
-    - name: Run Tests
-      run: |
-        if [ -f "vendor/bin/phpunit" ]; then
-          vendor/bin/phpunit --configuration application/tests/phpunit.xml
-        else
-          echo "No tests found. Skipping."
-        fi
-
-    # Optional: Validate PHP files
-    - name: Lint PHP files
-      run: find . -type f -name "*.php" -exec php -l {} \;
-
-    # Deployment to GitHub Pages (Optional)
+    # Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
-      if: ${{ github.ref == 'refs/heads/main' }}
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
